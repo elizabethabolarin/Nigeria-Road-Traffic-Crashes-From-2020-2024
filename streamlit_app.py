@@ -185,6 +185,20 @@ def section_header(text, color="green"):
     st.markdown(f'<span class="{css_class}">{text}</span>', unsafe_allow_html=True)
 
 
+def is_word_column(df, column_name):
+    """
+    Checks whether a column holds WORDS (like state names) instead of
+    NUMBERS. We use this instead of checking the column's "dtype" label
+    directly, because different versions of pandas sometimes name that
+    label differently for text columns -- this check works no matter
+    which pandas version is running the app.
+    """
+    return not pd.api.types.is_numeric_dtype(df[column_name])
+    # ^ pandas already has a simple built-in check for "is this a number
+    #   column?" -- we just flip the answer with "not" to get "is this NOT
+    #   a number column?", i.e. "does it hold words instead?"
+
+
 # ======================================================================
 # SIDEBAR NAVIGATION
 # ======================================================================
@@ -374,7 +388,7 @@ elif page == "🧹 2. Clean Data & Charts":
 
     elif chart_choice == "Box Plot":
         col = st.selectbox("Number column:", number_columns, index=number_columns.index(target))
-        group_options = [c for c in df.columns if df[c].dtype == "object" or df[c].nunique() < 20]
+        group_options = [c for c in df.columns if is_word_column(df, c) or df[c].nunique() < 20]
         # ^ only offer to group by columns that are text, or that don't have too many different values
         group = st.selectbox("Group by (optional):", ["None"] + group_options)
         fig, ax = plt.subplots(figsize=(10, 5))
@@ -408,7 +422,7 @@ elif page == "🧹 2. Clean Data & Charts":
             st.caption("**What you're seeing:** numbers close to +1 or -1 mean a strong relationship. Close to 0 means little to no relationship.")
 
     elif chart_choice == "Bar Chart by Group":
-        cat_options = [c for c in df.columns if df[c].dtype == "object" or df[c].nunique() < 40]
+        cat_options = [c for c in df.columns if is_word_column(df, c) or df[c].nunique() < 40]
         cat_col = st.selectbox("Group by:", cat_options)
         agg = st.radio("Show the:", ["average", "total"], horizontal=True)   # let them pick average or sum
         grouped = df.groupby(cat_col)[target].agg("mean" if agg == "average" else "sum").sort_values(ascending=False)
@@ -530,7 +544,7 @@ elif page == "🎯 4. Make a Prediction":
         cols = st.columns(2)                                          # two side-by-side columns, to fit more inputs on screen
         for i, feature in enumerate(features):                         # go through each clue column, one at a time
             col = cols[i % 2]                                            # alternate between the left and right column
-            if feature in df_ref.columns and df_ref[feature].dtype == "object":
+            if feature in df_ref.columns and is_word_column(df_ref, feature):
                 # ^ if this clue is a text column (like State)...
                 choices = sorted(df_ref[feature].dropna().unique().tolist())   # get a sorted list of all its real values
                 input_values[feature] = col.selectbox(feature, choices)          # ...show a drop-down list to pick from
