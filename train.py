@@ -47,7 +47,7 @@ def score_model(model, X, y):
 
 
 def train_and_save_model(
-    csv_file_path="data/Nigerian_Road_Traffic_Crashes_2020_2024.csv",   # where to find the raw data file
+    csv_file_path="Nigerian_Road_Traffic_Crashes_2020_2024.csv",   # where to find the raw data file
     feature_columns=None,                                                # which columns to use as clues (default if not given)
     target_column=TARGET_COLUMN,                                         # which column to predict
     save_folder="saved_model",                                           # where to save the finished model
@@ -116,19 +116,34 @@ def train_and_save_model(
     # is an honest estimate of how the model would do on brand-new data.
     test_score = score_model(winner_model, X_test, y_test)   # check the winning model on the untouched test data
 
-    # ---- Step 8: Save the winning model + the DataPreparer to files -------
+    # ---- Step 8: Save EVERY trained model + the DataPreparer to files -----
+    # We save ALL the models here (not just the winner), so that later, the
+    # FastAPI app can let someone choose which model they want a prediction
+    # from, instead of only ever offering the winner.
     os.makedirs(save_folder, exist_ok=True)
     # ^ create the save folder if it doesn't already exist (exist_ok=True means "don't complain if it's already there")
 
-    joblib_model_path = os.path.join(save_folder, "trained_model.joblib")   # build the full file path for the model
     preparer_path = os.path.join(save_folder, "data_preparer.joblib")        # build the full file path for the DataPreparer
 
     import joblib                              # joblib: our tool for saving/loading Python objects to/from a file
-    joblib.dump(winner_model, joblib_model_path)   # save the winning model to its file
     preparer.save(preparer_path)                    # save the DataPreparer (which remembers the state numbers) to its file
+
+    model_files = {}   # will map each model's name to the filename it was saved under, e.g. "Linear Regression" -> "model_linear_regression.joblib"
+    for model_name, model in candidate_models.items():                          # go through both trained models
+        safe_filename = "model_" + model_name.lower().replace(" ", "_") + ".joblib"
+        # ^ turns "Linear Regression" into "model_linear_regression.joblib" -- safe to use as an actual filename
+        joblib.dump(model, os.path.join(save_folder, safe_filename))              # save this model to its own file
+        model_files[model_name] = safe_filename                                     # remember which file holds which model
+
+    # We ALSO keep saving the winner under its old, simple filename
+    # ("trained_model.joblib"), so anything already relying on that exact
+    # name (like an older version of this project) still keeps working.
+    joblib.dump(winner_model, os.path.join(save_folder, "trained_model.joblib"))
 
     info_to_remember = {                          # a small summary of what happened, saved as plain text (JSON)
         "winner_model_name": winner_name,
+        "available_models": list(candidate_models.keys()),   # the full list of model names someone can choose from
+        "model_files": model_files,                            # which file holds which model
         "feature_columns": feature_columns,
         "target_column": target_column,
         "validation_scores": validation_scores,
@@ -146,6 +161,7 @@ def train_and_save_model(
         print("\nFinal TEST score (an honest, unbiased check):")
         print({k: round(v, 3) for k, v in test_score.items()})      # round each test number to 3 decimal places
         print(f"\nSaved model and helper files to: {save_folder}/")
+        print(f"Both models were saved, so the API can offer a choice: {model_files}")
 
     return {   # send back everything a caller (like the notebook) might want to look at afterward
         "validation_scores": validation_scores,
