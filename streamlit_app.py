@@ -217,7 +217,7 @@ page = st.sidebar.radio(
 )
 # `page` now holds whichever option the person clicked, e.g. "🏠 Home"
 
-DATA_FILE = "data/Nigerian_Road_Traffic_Crashes_2020_2024.csv"   # the default data file location
+DATA_FILE = "Nigerian_Road_Traffic_Crashes_2020_2024.csv"   # the default data file location
 
 
 # ======================================================================
