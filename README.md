@@ -8,8 +8,7 @@ in plain, simple terms and split into just a few files.
 
 ```
 traffic-crash-project-simple/
-├── data/
-│   └── Nigerian_Road_Traffic_Crashes_2020_2024.csv   <- the raw data
+├── Nigerian_Road_Traffic_Crashes_2020_2024.csv        <- the raw data
 ├── notebooks/
 │   └── traffic_crashes_analysis.ipynb                <- full walkthrough with charts
 ├── saved_model/                                       <- created after you run train.py
