@@ -6,12 +6,9 @@ and the FastAPI app need to use. Keeping it in one place means the
 same cleaning steps happen every time, whether we're training the
 model or making a new prediction later.
 
-Think of this file as a recipe card that both the "kitchen" (training)
-and the "waiter" (the API that serves predictions) follow exactly the
-same way.
 """
 
-import pandas as pd                          # pandas lets us work with data as a table (rows and columns)
+import pandas as pd                     # pandas lets us work with data as a table (rows and columns)
 from sklearn.preprocessing import LabelEncoder  # a small tool that turns text (like state names) into numbers
 import joblib   # joblib is just a tool for saving a Python object to a
                  # file on the computer, and loading it back later --
@@ -38,7 +35,7 @@ def load_data(file_path):
 def clean_data(df):
     """
     Fix simple, obvious problems in the data:
-    - Remove exact duplicate rows.
+    - Remove duplicate rows.
     - Fix impossible negative numbers in 'Other_Factors'
       (a crash count can never be negative).
     """
@@ -64,7 +61,7 @@ def add_time_columns(df):
     if "Quarter" in df.columns:                 # only run this if the 'Quarter' column exists
         pieces = df["Quarter"].str.split(" ", expand=True)   # split "Q4 2020" into two pieces: "Q4" and "2020"
         df["Quarter_Num"] = pieces[0].str.replace("Q", "", regex=False).astype(int)
-        # ^ pieces[0] is "Q4" -> remove the letter "Q" -> "4" -> turn the text "4" into the real number 4
+        # pieces[0] is "Q4" -> remove the letter "Q" -> "4" -> turn the text "4" into the real number 4
         df["Year"] = pieces[1].astype(int)       # pieces[1] is the text "2020" -> turn it into the real number 2020
     return df   # send back the table with the two new number columns added
 
@@ -89,7 +86,7 @@ class DataPreparer:
         # __init__ runs automatically whenever we create a new DataPreparer.
         # It just sets up the starting values this object will remember.
         self.feature_columns = feature_columns if feature_columns else list(FEATURE_COLUMNS)
-        # ^ use the columns we were given, or fall back to the default list if none were given
+        # use the columns we were given, or fall back to the default list if none were given
 
         self.target_column = target_column       # remember which column we're trying to predict
 
@@ -119,12 +116,12 @@ class DataPreparer:
         df = df.copy()                # work on a copy so we don't change the caller's original table
 
         if "State" in self.feature_columns:                        # only convert State if we're actually using it
-            known_states = set(self.state_to_number.classes_)       # the list of state names the model already knows
+            known_states = set(self.state_to_number.classes_)       # the list of state names the model already knows (.classes_ is a labelencoder)
             numbers = []                                              # we'll build up the converted numbers here, one by one
             for state_name in df["State"].tolist():                  # go through every state name in this data, one row at a time
                 if state_name in known_states:                       # if we've seen this state name before...
                     numbers.append(int(self.state_to_number.transform([state_name])[0]))
-                    # ^ convert this one state name into its number, and add it to our list
+                    # convert this one state name into its number, and add it to our list
                 else:
                     # A state name we've never seen before (e.g. a typo)
                     # gets the placeholder number -1 instead of crashing.
