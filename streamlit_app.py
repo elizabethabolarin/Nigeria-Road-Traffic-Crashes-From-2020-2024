@@ -1,14 +1,14 @@
 """
 streamlit_app.py
 ==================
-This is our INTERACTIVE WEBSITE. It lets anyone -- even someone who
-can't code -- click through the whole project: load the data, clean it,
+This is our INTERACTIVE WEBSITE. It lets anyone even someone who
+can't code click through the whole project: load the data, clean it,
 look at charts, train models, and get predictions.
 
 Everything lives in this ONE file, in 5 sections you can scroll through
 in order:
 
-    0. PAGE STYLING     -- colors, fonts, and the reusable "road divider"
+    0. PAGE STYLING     colors, fonts, and the reusable "road divider"
     1. HOME PAGE
     2. PAGE 1: LOAD DATA
     3. PAGE 2: CLEAN DATA + CHARTS
@@ -30,13 +30,13 @@ from sklearn.ensemble import RandomForestRegressor                         # Mod
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score  # tools that score a model's accuracy
 
 from data_helper import DataPreparer, add_time_columns, COLUMNS_TO_AVOID, TARGET_COLUMN
-# ^ our own shared helper file -- same one used by train.py and fastapi_app.py
+# our own shared helper file same one used by train.py and fastapi_app.py
 
 sns.set_theme(style="whitegrid")   # sets a clean, light background style for every chart in this app
 
-st.set_page_config(page_title="Nigerian Traffic Crashes", page_icon="🚦", layout="wide")
-# ^ this MUST be the first Streamlit command in the file. It sets the
-#   browser tab's title/icon, and "wide" makes the page use the full screen width.
+st.set_page_config(page_title="Nigerian Road Traffic Crashes", page_icon="🚦", layout="wide")
+# this MUST be the first Streamlit command in the file. It sets the
+# browser tab's title/icon, and "wide" makes the page use the full screen width.
 
 
 # ======================================================================
@@ -161,14 +161,14 @@ h1, h2, h3 {{
 }}
 </style>
 """, unsafe_allow_html=True)
-# ^ unsafe_allow_html=True tells Streamlit "yes, I really do want to inject
-#   raw HTML/CSS here" -- normally Streamlit blocks this for safety.
+# unsafe_allow_html=True tells Streamlit "yes, I really do want to inject
+# raw HTML/CSS here" -- normally Streamlit blocks this for safety.
 
 
 def road_divider():
     """Draws our signature road-line bar (used at the top of every page)."""
     st.markdown('<div class="road-divider"></div>', unsafe_allow_html=True)
-    # ^ this just inserts one empty <div> styled by the .road-divider CSS rule above
+    # this just inserts one empty <div> styled by the .road-divider CSS rule above
 
 
 def page_title(title, subtitle):
@@ -181,7 +181,7 @@ def page_title(title, subtitle):
 def section_header(text, color="green"):
     """Draws a small colored pill-shaped header to introduce a section."""
     css_class = "section-header" if color == "green" else "section-header amber"
-    # ^ pick which CSS style to use, based on the "color" we were given
+    # pick which CSS style to use, based on the "color" we were given
     st.markdown(f'<span class="{css_class}">{text}</span>', unsafe_allow_html=True)
 
 
@@ -194,9 +194,9 @@ def is_word_column(df, column_name):
     which pandas version is running the app.
     """
     return not pd.api.types.is_numeric_dtype(df[column_name])
-    # ^ pandas already has a simple built-in check for "is this a number
-    #   column?" -- we just flip the answer with "not" to get "is this NOT
-    #   a number column?", i.e. "does it hold words instead?"
+    # pandas already has a simple built-in check for "is this a number
+    # column?" -- we just flip the answer with "not" to get "is this NOT
+    # a number column?", i.e. "does it hold words instead?"
 
 
 # ======================================================================
@@ -255,7 +255,7 @@ elif page == "📥 1. Load Data":   # only runs if the person picked this page
 
     section_header("📂 Choose a File")
     uploaded_file = st.file_uploader("Upload your own CSV (optional) — or skip this to use the default project data:", type="csv")
-    # ^ shows a "browse files" button; uploaded_file will be None if nobody uploads anything
+    #  shows a "browse files" button; uploaded_file will be None if nobody uploads anything
 
     if uploaded_file is not None:              # did the person actually upload a file?
         df = pd.read_csv(uploaded_file)          # yes -> read THEIR file into a table
@@ -265,7 +265,7 @@ elif page == "📥 1. Load Data":   # only runs if the person picked this page
         st.info(f"Using the default file: {DATA_FILE}")
 
     st.session_state["raw_data"] = df
-    # ^ st.session_state is Streamlit's "memory" that survives between page switches and clicks.
+    #   st.session_state is Streamlit's "memory" that survives between page switches and clicks.
     #   We save the data here so the OTHER pages (Clean Data, Train Models, etc.) can use it too.
 
     section_header("📏 Size of the Data")
@@ -281,7 +281,7 @@ elif page == "📥 1. Load Data":   # only runs if the person picked this page
 
     section_header("🔢 Column Types")
     st.dataframe(df.dtypes.astype(str).rename("Type"), use_container_width=True)
-    # ^ df.dtypes tells us whether each column holds numbers, text, etc.
+    #  df.dtypes tells us whether each column holds numbers, text, etc.
 
     section_header("❓ Any Missing Values?", color="amber")
     missing = df.isnull().sum()                     # count how many empty cells are in each column
@@ -291,11 +291,11 @@ elif page == "📥 1. Load Data":   # only runs if the person picked this page
 
     section_header("👯 Any Duplicate Rows?")
     st.write(f"Exact duplicate rows found: **{df.duplicated().sum()}**")
-    # ^ df.duplicated() marks True for any row that's an exact copy of an earlier one; .sum() counts them
+    # df.duplicated() marks True for any row that's an exact copy of an earlier one; .sum() counts them
 
     section_header("📊 Summary Numbers", color="amber")
     st.dataframe(df.describe(), use_container_width=True)
-    # ^ df.describe() gives min, max, average, etc. for every number column, all at once
+    # df.describe() gives min, max, average, etc. for every number column, all at once
 
 
 # ======================================================================
@@ -339,10 +339,10 @@ elif page == "🧹 2. Clean Data & Charts":
     section_header("🎯 Step C: Pick What to Predict (the Target)", color="amber")
     number_columns = df.select_dtypes(include="number").columns.tolist()   # a list of all number columns
     suggested = TARGET_COLUMN if TARGET_COLUMN in number_columns else number_columns[0]
-    # ^ suggest Total_Crashes by default, unless it's somehow not available, then just suggest the first number column
+    # suggest Total_Crashes by default, unless it's somehow not available, then just suggest the first number column
 
     target = st.selectbox("What should the model try to predict?", options=number_columns, index=number_columns.index(suggested))
-    # ^ index=... tells the drop-down which option to show as already-selected when the page first loads
+    # index=... tells the drop-down which option to show as already-selected when the page first loads
 
     st.caption(f"We suggest **{suggested}** — the main number this whole project is about.")
 
@@ -352,7 +352,7 @@ elif page == "🧹 2. Clean Data & Charts":
     if leaky:
         st.warning(f"⚠️ Careful: {leaky} are only known AFTER a crash happens. Using them as clues would be 'cheating'.")
     good_defaults = [c for c in possible_features if c not in COLUMNS_TO_AVOID and c != "Quarter"]
-    # ^ our suggested starting selection: everything except the "avoid" columns and the raw text Quarter column
+    # our suggested starting selection: everything except the "avoid" columns and the raw text Quarter column
 
     features = st.multiselect("Which columns should the model use as clues?", options=possible_features, default=good_defaults)
 
@@ -389,7 +389,7 @@ elif page == "🧹 2. Clean Data & Charts":
     elif chart_choice == "Box Plot":
         col = st.selectbox("Number column:", number_columns, index=number_columns.index(target))
         group_options = [c for c in df.columns if is_word_column(df, c) or df[c].nunique() < 20]
-        # ^ only offer to group by columns that are text, or that don't have too many different values
+        # only offer to group by columns that are text, or that don't have too many different values
         group = st.selectbox("Group by (optional):", ["None"] + group_options)
         fig, ax = plt.subplots(figsize=(10, 5))
         if group != "None":                                            # did they choose a column to group by?
@@ -405,7 +405,7 @@ elif page == "🧹 2. Clean Data & Charts":
         x_col = st.selectbox("Compare this...", [c for c in number_columns if c != target])
         fig, ax = plt.subplots(figsize=(8, 5))
         sns.scatterplot(data=df, x=x_col, y=target, alpha=0.6, ax=ax, color=GREEN)
-        # ^ draws one dot per row, positioned by its x_col value and its target value; alpha makes dots see-through
+        # draws one dot per row, positioned by its x_col value and its target value; alpha makes dots see-through
         ax.set_title(f"{x_col} vs {target}")
         st.pyplot(fig)
         corr_value = df[[x_col, target]].corr().iloc[0, 1]    # calculate how strongly these two columns are related
@@ -416,7 +416,7 @@ elif page == "🧹 2. Clean Data & Charts":
         if len(chosen_cols) >= 2:                                # need at least 2 columns to compare anything
             fig, ax = plt.subplots(figsize=(8, 6))
             sns.heatmap(df[chosen_cols].corr(), annot=True, cmap="coolwarm", fmt=".2f", ax=ax)
-            # ^ draws a color-coded grid; annot=True writes the actual number inside each square
+            # draws a color-coded grid; annot=True writes the actual number inside each square
             ax.set_title("How Strongly Are Columns Related?")
             st.pyplot(fig)
             st.caption("**What you're seeing:** numbers close to +1 or -1 mean a strong relationship. Close to 0 means little to no relationship.")
@@ -426,7 +426,7 @@ elif page == "🧹 2. Clean Data & Charts":
         cat_col = st.selectbox("Group by:", cat_options)
         agg = st.radio("Show the:", ["average", "total"], horizontal=True)   # let them pick average or sum
         grouped = df.groupby(cat_col)[target].agg("mean" if agg == "average" else "sum").sort_values(ascending=False)
-        # ^ groups the data by cat_col, then averages or sums the target within each group, sorted highest first
+        # groups the data by cat_col, then averages or sums the target within each group, sorted highest first
         fig, ax = plt.subplots(figsize=(10, 5))
         sns.barplot(x=grouped.index, y=grouped.values, ax=ax, color=GREEN)
         plt.xticks(rotation=90)
@@ -464,7 +464,7 @@ elif page == "🤖 3. Train Models":
 
     if st.button("🚀 Teach the Models Now", type="primary"):     # a clickable button; the code below only runs when clicked
         with st.spinner("Splitting the data and teaching two models... this only takes a moment."):
-            # ^ st.spinner shows a little "loading" animation while the code inside this block runs
+            # st.spinner shows a little "loading" animation while the code inside this block runs
 
             train_val, test_data = train_test_split(df, test_size=0.2, random_state=42)     # first cut off 20% as test data
             train_data, val_data = train_test_split(train_val, test_size=0.25, random_state=42)
@@ -492,25 +492,25 @@ elif page == "🤖 3. Train Models":
                 }
                 trained[name] = model                                              # remember the trained model itself too
 
-            winner_name = min(scores, key=lambda n: scores[n]["RMSE"])
+            best_model = min(scores, key=lambda n: scores[n]["RMSE"])
             # ^ pick whichever model name has the smallest RMSE value
 
             st.session_state["scores"] = scores                     # save results so they're still visible after this block ends
-            st.session_state["winner_name"] = winner_name
-            st.session_state["winner_model"] = trained[winner_name]
+            st.session_state["best_model"] = best_model
+            st.session_state["winner_model"] = trained[best_model]
             st.session_state["preparer"] = preparer
 
-        st.success("Done teaching both models!")
+        st.success("Done predicting with both models!")
 
     if "scores" in st.session_state:                             # only show results if training has actually happened
         section_header("📋 How Each Model Did (on data it wasn't taught with)", color="amber")
         scores_table = pd.DataFrame(st.session_state["scores"]).T.round(3)   # turn the scores dictionary into a neat table
         st.dataframe(scores_table, use_container_width=True)
 
-        winner = st.session_state["winner_name"]
+        best = st.session_state["best_model"]
         st.markdown(f"""
         <div style="background-color:{GREEN}; color:white; padding:16px; border-radius:12px; font-family:'Poppins',sans-serif; font-weight:700; font-size:1.2rem;">
-        🏆 Automatically chosen winner: {winner}
+        🏆 Automatically chosen winner: {best}
         </div>
         """, unsafe_allow_html=True)
         # ^ a custom-styled green banner announcing the winning model
@@ -533,10 +533,10 @@ elif page == "🎯 4. Make a Prediction":
     features = st.session_state["features"]                        # grab the list of clue columns
     df_ref = st.session_state["clean_data"]                          # grab the cleaned data, just to look up sensible default values
 
-    st.info(f"Using the model that won earlier: **{st.session_state['winner_name']}**")
+    st.info(f"Using the model that won earlier: **{st.session_state['best_model']}**")
 
     tab1, tab2 = st.tabs(["🧍 One Prediction", "📄 Many at Once (Upload a File)"])
-    # ^ creates two clickable tabs on the page; everything below is grouped under one tab or the other
+    # creates two clickable tabs on the page; everything below is grouped under one tab or the other
 
     with tab1:                                                    # ---- everything here appears under Tab 1 ----
         section_header("✍️ Fill In the Details")
@@ -545,13 +545,13 @@ elif page == "🎯 4. Make a Prediction":
         for i, feature in enumerate(features):                         # go through each clue column, one at a time
             col = cols[i % 2]                                            # alternate between the left and right column
             if feature in df_ref.columns and is_word_column(df_ref, feature):
-                # ^ if this clue is a text column (like State)...
+                # if this clue is a text column (like State)...
                 choices = sorted(df_ref[feature].dropna().unique().tolist())   # get a sorted list of all its real values
                 input_values[feature] = col.selectbox(feature, choices)          # ...show a drop-down list to pick from
             else:
                 # ...otherwise it's a number column, so show a number-entry box
                 default_value = float(df_ref[feature].median()) if feature in df_ref.columns else 0.0
-                # ^ pre-fill the box with that column's typical (middle) value, as a sensible starting point
+                # pre-fill the box with that column's typical (middle) value, as a sensible starting point
                 input_values[feature] = col.number_input(feature, value=default_value)
 
         if st.button("🔮 Predict", type="primary"):                  # only runs the code below when this button is clicked
@@ -564,18 +564,18 @@ elif page == "🎯 4. Make a Prediction":
                 <div style="font-family:'Poppins',sans-serif; font-size:2.6rem; font-weight:800; color:{ASPHALT};">{prediction:.1f}</div>
             </div>
             """, unsafe_allow_html=True)
-            # ^ a big, bold amber card showing the final predicted number
+            # a big, bold amber card showing the final predicted number
 
     with tab2:                                                    # ---- everything here appears under Tab 2 ----
         section_header("📄 Upload a File With Many Rows", color="amber")
         st.write(f"Your file needs these columns: `{', '.join(features)}`")
         batch_file = st.file_uploader("Upload a CSV", type="csv", key="batch")
-        # ^ key="batch" keeps this uploader separate from any other file_uploader on the page
+        # key="batch" keeps this uploader separate from any other file_uploader on the page
 
         if batch_file is not None:                                  # did they actually upload something?
             batch_df = pd.read_csv(batch_file)                         # read their file into a table
             missing_cols = [f for f in features if f not in batch_df.columns]
-            # ^ check whether any of the columns the model needs are missing from their file
+            # check whether any of the columns the model needs are missing from their file
             if missing_cols:
                 st.error(f"Your file is missing these needed columns: {missing_cols}")
             else:
@@ -587,5 +587,5 @@ elif page == "🎯 4. Make a Prediction":
                 st.dataframe(result_df, use_container_width=True)           # show the results as a table on screen
 
                 csv_bytes = result_df.to_csv(index=False).encode("utf-8")
-                # ^ turn the results table into plain CSV text, ready to be downloaded as a file
+                # turn the results table into plain CSV text, ready to be downloaded as a file
                 st.download_button("📥 Download These Predictions", data=csv_bytes, file_name="predictions.csv", mime="text/csv")
