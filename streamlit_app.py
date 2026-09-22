@@ -224,7 +224,7 @@ DATA_FILE = "Nigerian_Road_Traffic_Crashes_2020_2024.csv"   # the default data f
 # 1. HOME PAGE
 # ======================================================================
 if page == "🏠 Home":   # this whole block only runs if the person picked "Home" in the sidebar
-    page_title("Nigerian Traffic Crashes", "A simple, guided walk from raw data to a working prediction tool.")
+    page_title("Nigerian Road Traffic Crashes", "A simple, guided walk from raw data to a working prediction tool.")
 
     col1, col2 = st.columns([2, 1])   # split the page into two side-by-side columns (left is twice as wide as right)
     with col1:                          # everything indented under here appears in the LEFT column
