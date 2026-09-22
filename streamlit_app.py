@@ -231,11 +231,11 @@ if page == "🏠 Home":   # this whole block only runs if the person picked "Hom
         st.markdown("""
         This app walks through the whole project in **4 easy steps**, one page at a time:
 
-        1. **📥 Load Data** — bring in the crash data and take a first look at it.
-        2. **🧹 Clean Data & Charts** — fix messy values and explore the data with charts.
-        3. **🤖 Train Models** — teach two different models to predict crash numbers, and
+        1. **📥 Load Data** - bring in the crash data and take a first look at it.
+        2. **🧹 Clean Data & Charts** - fix messy values and explore the data with charts.
+        3. **🤖 Train Models** - teach two different models to predict crash numbers, and
            see which one guesses best.
-        4. **🎯 Make a Prediction** — use the winning model to predict crashes for a state
+        4. **🎯 Make a Prediction** - use the winning model to predict crashes for a state
            and quarter of your choice.
 
         Use the green menu on the left to move between pages, in order, the first time.
@@ -244,7 +244,7 @@ if page == "🏠 Home":   # this whole block only runs if the person picked "Hom
         st.markdown("### 🚗 Quick Facts")
         st.info("Covers **Q4 2020 to Q1 2024** across Nigerian states.")           # a light-blue info box
         st.info("Goal: predict **Total_Crashes** using recorded contributing factors.")
-        st.info("Two models are compared automatically — no guessing needed.")
+        st.info("Two models are compared automatically - no guessing needed.")
 
 
 # ======================================================================
@@ -254,7 +254,7 @@ elif page == "📥 1. Load Data":   # only runs if the person picked this page
     page_title("Step 1: Load the Data", "Bring the crash data into the app and take a first look.")
 
     section_header("📂 Choose a File")
-    uploaded_file = st.file_uploader("Upload your own CSV (optional) — or skip this to use the default project data:", type="csv")
+    uploaded_file = st.file_uploader("Upload your own CSV (optional) - or skip this to use the default project data:", type="csv")
     #  shows a "browse files" button; uploaded_file will be None if nobody uploads anything
 
     if uploaded_file is not None:              # did the person actually upload a file?
