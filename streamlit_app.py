@@ -29,7 +29,7 @@ from sklearn.linear_model import LinearRegression                         # Mode
 from sklearn.ensemble import RandomForestRegressor                         # Model 2: many small trees averaged together
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score  # tools that score a model's accuracy
 
-from data_helper import DataPreparer, add_time_columns, COLUMNS_TO_AVOID, TARGET_COLUMN
+from data_helper import DataPreparer, clean_data, add_time_columns, COLUMNS_TO_AVOID, TARGET_COLUMN
 # our own shared helper file same one used by train.py and fastapi_app.py
 
 sns.set_theme(style="whitegrid")   # sets a clean, light background style for every chart in this app
@@ -309,6 +309,7 @@ elif page == "🧹 2. Clean Data & Charts":
         st.stop()                                      # st.stop() halts the rest of this page from running
 
     df = st.session_state["raw_data"].copy()          # grab the data saved from Page 1, and work on a copy of it
+    df = clean_data(df)                                 # fix negative Other_Factors values, remove exact duplicate rows
     df = add_time_columns(df)                          # turns "Q4 2020" into Quarter_Num=4, Year=2020
 
     section_header("🧽 Step A: Remove Columns You Don't Want (optional)")
